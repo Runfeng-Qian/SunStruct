@@ -13,110 +13,121 @@
             <local:BoolToStarBrushConverter x:Key="BoolToStarBrushConverter"/>
         </Grid.Resources>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <!-- Add Frame as the first element -->
+        <Frame x:Name="ContentFrame" Background="White" />
 
-        <!-- Top Navigation Bar -->
-        <Grid Grid.Row="0" Background="#2D2D2D">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <!-- Main UI Grid - This should be hidden when navigating -->
+        <Grid x:Name="HomeGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0,0,0">
-                <!-- Placeholder for logo -->
-                <Ellipse Width="20" Height="20" Fill="#F89406" Stroke="White" StrokeThickness="2"/>
-                <TextBlock Text="SunStruct" FontSize="18" Foreground="White" FontWeight="SemiBold" Margin="8,0,0,0"/>
-            </StackPanel>
-        </Grid>
+            <!-- Top Navigation Bar -->
+            <Grid Grid.Row="0" Background="#2D2D2D">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- Main Content Area with Navigation -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="60"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Side Navigation -->
-            <Grid Grid.Column="0" Background="#333333">
-                <StackPanel>
-                    <!-- Home Button -->
-                    <Button Height="40" Background="Transparent" BorderThickness="0">
-                        <StackPanel>
-                            <FontIcon Glyph="&#xE80F;" Foreground="#F89406"/>
-                            <TextBlock Text="Home" FontSize="10" Foreground="White" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-
-                    <!-- Projects Button -->
-                    <Button Height="40" Background="Transparent" BorderThickness="0">
-                        <StackPanel>
-                            <FontIcon Glyph="&#xE8A5;" Foreground="#999999"/>
-                            <TextBlock Text="Projects" FontSize="10" Foreground="#999999" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0,0,0">
+                    <!-- Placeholder for logo -->
+                    <Ellipse Width="20" Height="20" Fill="#F89406" Stroke="White" StrokeThickness="2"/>
+                    <TextBlock Text="SunStruct" FontSize="18" Foreground="White" FontWeight="SemiBold" Margin="8,0,0,0"/>
                 </StackPanel>
             </Grid>
 
-            <!-- Main Content Area -->
-            <Grid Grid.Column="1" Background="White">
-                <!-- New Design Button -->
-                <Button Content="New Design" Width="150" Height="40" 
-                        Background="#F89406" Foreground="White" 
-                        HorizontalAlignment="Center" VerticalAlignment="Top" 
-                        Margin="0,20,0,0" FontWeight="SemiBold"/>
+            <!-- Main Content Area with Navigation -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <!-- Recent Projects -->
-                <Grid Margin="20,80,20,20">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <!-- Side Navigation -->
+                <Grid Grid.Column="0" Background="#333333">
+                    <StackPanel>
+                        <!-- Home Button -->
+                        <Button Height="40" Background="Transparent" BorderThickness="0">
+                            <StackPanel>
+                                <FontIcon Glyph="&#xE80F;" Foreground="#F89406"/>
+                                <TextBlock Text="Home" FontSize="10" Foreground="White" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                    <!-- Recent Projects Header -->
-                    <TextBlock Grid.Row="0" Text="Recent Projects" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                        <!-- Projects Button -->
+                        <Button Height="40" Background="Transparent" BorderThickness="0">
+                            <StackPanel>
+                                <FontIcon Glyph="&#xE8A5;" Foreground="#999999"/>
+                                <TextBlock Text="Projects" FontSize="10" Foreground="#999999" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
-                    <!-- Search Bar -->
-                    <Grid Grid.Row="1" Margin="0,0,0,15">
-                        <TextBox PlaceholderText="Search Projects" Height="32"/>
+                <!-- Main Content Area -->
+                <Grid Grid.Column="1" Background="White">
+                    <!-- New Design Button with Click event handler -->
+                    <Button Content="New Design" Width="150" Height="40" 
+                            Background="#F89406" Foreground="White" 
+                            HorizontalAlignment="Center" VerticalAlignment="Top" 
+                            Margin="0,20,0,0" FontWeight="SemiBold"
+                            Click="NewDesignButton_Click"/>
+
+                    <!-- Recent Projects -->
+                    <Grid Margin="20,80,20,20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Recent Projects Header -->
+                        <TextBlock Grid.Row="0" Text="Recent Projects" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
+
+                        <!-- Search Bar -->
+                        <Grid Grid.Row="1" Margin="0,0,0,15">
+                            <TextBox PlaceholderText="Search Projects" Height="32"/>
+                        </Grid>
+
+                        <!-- Projects List with item click event -->
+                        <ListView Grid.Row="2" BorderBrush="#EEEEEE" BorderThickness="1"
+                                ItemsSource="{Binding Projects}"
+                                IsItemClickEnabled="True"
+                                ItemClick="ProjectsListView_ItemClick">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Height="50">
+                                        <Grid.ColumnDefinitions>
+                                            <!-- Increased width for icon columns -->
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="40"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Star Icon with improved sizing and alignment -->
+                                        <Button Grid.Column="0" Background="Transparent" BorderThickness="0" 
+                            Padding="0" HorizontalAlignment="Center">
+                                            <FontIcon Glyph="&#xE734;" FontSize="16"
+                                  Foreground="{Binding IsStarred, Converter={StaticResource BoolToStarBrushConverter}}"/>
+                                        </Button>
+
+                                        <!-- Project Info -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#666666"/>
+                                        </StackPanel>
+
+                                        <!-- Delete Button with improved sizing and alignment -->
+                                        <Button Grid.Column="2" Background="Transparent" BorderThickness="0"
+                            Padding="0" HorizontalAlignment="Center">
+                                            <FontIcon Glyph="&#xE74D;" FontSize="16" Foreground="#999999"/>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </Grid>
-
-                    <!-- Projects List - Changed from x:Bind to Binding -->
-                    <ListView Grid.Row="2" BorderBrush="#EEEEEE" BorderThickness="1"
-                              ItemsSource="{Binding Projects}">
-                        <ListView.ItemTemplate>
-                            <!-- Removed x:DataType since using standard binding -->
-                            <DataTemplate>
-                                <Grid Height="50">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="30"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- Star Icon - Changed from x:Bind to Binding -->
-                                    <Button Grid.Column="0" Background="Transparent" BorderThickness="0">
-                                        <FontIcon Glyph="&#xE734;" 
-                                                  Foreground="{Binding IsStarred, Converter={StaticResource BoolToStarBrushConverter}}"/>
-                                    </Button>
-
-                                    <!-- Project Info - Changed from x:Bind to Binding -->
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#666666"/>
-                                    </StackPanel>
-
-                                    <!-- Delete Button -->
-                                    <Button Grid.Column="2" Background="Transparent" BorderThickness="0">
-                                        <FontIcon Glyph="&#xE74D;" Foreground="#999999"/>
-                                    </Button>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
                 </Grid>
             </Grid>
         </Grid>
