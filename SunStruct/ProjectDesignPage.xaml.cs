@@ -138,10 +138,19 @@ namespace SunStruct
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Frame.CanGoBack)
+            System.Diagnostics.Debug.WriteLine("Back button clicked");
+
+            // Use the static MainWindow.Current to navigate back to home
+            if (MainWindow.Current != null)
             {
-                // Just go back - don't try to manipulate the MainWindow directly
-                Frame.GoBack();
+                System.Diagnostics.Debug.WriteLine("Using MainWindow.Current to navigate to home");
+                MainWindow.Current.NavigateToHome();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("MainWindow.Current is null, trying fallback");
+                // Fallback method - just clear the frame content
+                Frame.Content = null;
             }
         }
     }

@@ -21,8 +21,14 @@ namespace SunStruct
         // Reference to the main frame for navigation
         private Frame MainFrame { get; set; }
 
+        // Static instance for access from other pages
+        public static MainWindow Current { get; private set; }
+
         public MainWindow()
         {
+            // Set the static reference
+            Current = this;
+
             // Initialize data before InitializeComponent
             InitializeProjects();
 
@@ -49,9 +55,6 @@ namespace SunStruct
                         rootGrid.Children.Insert(0, MainFrame);
                     }
                 }
-
-                // Add a handler for navigated event to detect when going back
-                MainFrame.Navigated += MainFrame_Navigated;
             }
 
             // Setting title explicitly since WinUI 3 doesn't inherit from window title
@@ -72,20 +75,23 @@ namespace SunStruct
             ViewModel.Projects.Add(new Project { Name = "Solar Farm", Description = "789 Desert Ave, Las Vegas, NV 89123", IsStarred = true });
         }
 
-        private void MainFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+        // Public method that can be called from other pages to navigate back to home
+        public void NavigateToHome()
         {
-            // When navigation happens, check if we're back to the home page (null or empty source)
-            if (e.SourcePageType == null || e.SourcePageType.FullName == string.Empty)
+            System.Diagnostics.Debug.WriteLine("NavigateToHome called");
+
+            // Clear the frame content
+            if (MainFrame != null)
             {
-                // We navigated back to home, show the home grid
-                ShowHomeUI();
+                MainFrame.Content = null;
             }
-            else if (e.SourcePageType == typeof(ProjectDesignPage))
-            {
-                // We navigated to ProjectDesignPage, hide the home grid
-                HideHomeUI();
-            }
+
+            // Show the home UI
+            ShowHomeUI();
+
+            System.Diagnostics.Debug.WriteLine("Home UI should now be visible");
         }
+
         private void ShowHomeUI()
         {
             if (Content is Grid rootGrid)
@@ -94,7 +100,16 @@ namespace SunStruct
                 if (homeGrid != null)
                 {
                     homeGrid.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                    System.Diagnostics.Debug.WriteLine("HomeGrid visibility set to Visible");
                 }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: HomeGrid not found");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR: Root content is not a Grid");
             }
         }
 
@@ -110,34 +125,71 @@ namespace SunStruct
             }
         }
 
-        private void NewDesignButton_Click(object sender, RoutedEventArgs e)
+        private async void NewDesignButton_Click(object sender, RoutedEventArgs e)
         {
-            // Add debug output
-            System.Diagnostics.Debug.WriteLine("New Design button clicked");
-
-            // Create a default project for new designs
-            var newProject = new Project
+            // Create a dialog to ask for project name
+            ContentDialog projectNameDialog = new ContentDialog
             {
-                Name = "New Project",
-                Description = "San Francisco, CA 94105",
-                IsStarred = false
+                Title = "New Project",
+                PrimaryButtonText = "Create",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.Content.XamlRoot
             };
 
-            System.Diagnostics.Debug.WriteLine("Project created");
-
-            // Check if MainFrame is null
-            if (MainFrame == null)
+            // Create content for the dialog
+            StackPanel dialogContent = new StackPanel();
+            TextBlock textBlock = new TextBlock
             {
-                System.Diagnostics.Debug.WriteLine("ERROR: MainFrame is null");
-            }
-            else
+                Text = "Enter project name:",
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+            TextBox projectNameTextBox = new TextBox
             {
-                System.Diagnostics.Debug.WriteLine("Attempting to navigate to ProjectDesignPage");
-                MainFrame.Navigate(typeof(ProjectDesignPage), newProject);
+                PlaceholderText = "Project Name",
+                MinWidth = 300
+            };
+            dialogContent.Children.Add(textBlock);
+            dialogContent.Children.Add(projectNameTextBox);
+            projectNameDialog.Content = dialogContent;
 
-                // Hide the home UI - this will actually be handled by the Navigated event now
-                // but we can call it directly for clarity
-                HideHomeUI();
+            // Show the dialog and wait for user input
+            ContentDialogResult result = await projectNameDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                // Get the project name from the text box
+                string projectName = projectNameTextBox.Text.Trim();
+
+                // If the name is empty, use a default name
+                if (string.IsNullOrEmpty(projectName))
+                {
+                    projectName = "New Project";
+                }
+
+                // Create a new project with the entered name
+                var newProject = new Project
+                {
+                    Name = projectName,
+                    Description = "San Francisco, CA 94105",
+                    IsStarred = false
+                };
+
+                System.Diagnostics.Debug.WriteLine($"Creating project with name: {projectName}");
+
+                // Check if MainFrame is null
+                if (MainFrame == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: MainFrame is null");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Attempting to navigate to ProjectDesignPage");
+                    MainFrame.Navigate(typeof(ProjectDesignPage), newProject);
+
+                    // Hide the home UI
+                    HideHomeUI();
+                }
             }
         }
 
