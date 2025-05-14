@@ -19,6 +19,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0,0,0">
@@ -37,9 +38,19 @@
                 <TextBlock x:Name="ProjectNameTextBlock" Text="New Project" 
                            Foreground="White" FontWeight="SemiBold" FontSize="16"/>
                 <TextBlock Text=" - " Foreground="White" FontSize="16"/>
-                <TextBlock x:Name="ProjectLocationTextBlock" Text="Location" 
+                <TextBlock x:Name="ProjectLocationTextBlock" Text="No location set" 
                            Foreground="#CCCCCC" FontSize="16"/>
             </StackPanel>
+
+            <!-- Location Button -->
+            <Button x:Name="LocationButton" Grid.Column="2" 
+                    Content="Select Location" 
+                    Background="#F89406" 
+                    Foreground="White" 
+                    FontWeight="SemiBold"
+                    Margin="0,0,15,0"
+                    Click="LocationButton_Click">
+            </Button>
         </Grid>
 
         <!-- Main Content Area -->
@@ -60,33 +71,33 @@
                 <TextBlock Grid.Row="0" Text="Design Tools" FontSize="16" 
                            FontWeight="SemiBold" Margin="15,15,0,15"/>
 
-                <!-- Tools List -->
+                <!-- Tools List - Now with Click event handlers -->
                 <ListView Grid.Row="1" Margin="10,0,10,10">
-                    <ListViewItem>
+                    <ListViewItem x:Name="SolarPanelsItem" Tapped="SolarPanels_Click">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon Glyph="&#xE946;" Foreground="#666666" Margin="0,0,10,0"/>
                             <TextBlock Text="Solar Panels" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ListViewItem>
-                    <ListViewItem>
+                    <ListViewItem x:Name="MeasureItem" Tapped="Measure_Click">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon Glyph="&#xE83F;" Foreground="#666666" Margin="0,0,10,0"/>
                             <TextBlock Text="Measure" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ListViewItem>
-                    <ListViewItem>
+                    <ListViewItem x:Name="ComponentsItem" Tapped="Components_Click">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon Glyph="&#xE875;" Foreground="#666666" Margin="0,0,10,0"/>
                             <TextBlock Text="Components" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ListViewItem>
-                    <ListViewItem>
+                    <ListViewItem x:Name="LayoutItem" Tapped="Layout_Click">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon Glyph="&#xE8A5;" Foreground="#666666" Margin="0,0,10,0"/>
                             <TextBlock Text="Layout" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ListViewItem>
-                    <ListViewItem>
+                    <ListViewItem x:Name="CalculateItem" Tapped="Calculate_Click">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon Glyph="&#xE8FD;" Foreground="#666666" Margin="0,0,10,0"/>
                             <TextBlock Text="Calculate" VerticalAlignment="Center"/>
@@ -108,6 +119,15 @@
                          VerticalAlignment="Top"
                          HorizontalAlignment="Center"
                          Margin="0,10,0,0" />
+
+                <!-- Location status message -->
+                <InfoBar x:Name="LocationInfoBar" 
+                         IsOpen="False"
+                         Severity="Success" 
+                         Title="Location"
+                         VerticalAlignment="Top"
+                         HorizontalAlignment="Center"
+                         Margin="0,60,0,0" />
 
                 <!-- Overlaid zoom controls -->
                 <StackPanel Orientation="Vertical" 

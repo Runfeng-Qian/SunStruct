@@ -4,6 +4,9 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.IO;
+using Windows.Storage;
 
 namespace SunStruct
 {
@@ -29,8 +32,12 @@ namespace SunStruct
             // Set the static reference
             Current = this;
 
+            System.Diagnostics.Debug.WriteLine($"LocalFolder Path: {ApplicationData.Current.LocalFolder.Path}");
+            System.Diagnostics.Debug.WriteLine($"Projects Directory: {Path.Combine(ApplicationData.Current.LocalFolder.Path, "Projects")}");
+
             // Initialize data before InitializeComponent
-            InitializeProjects();
+            // Note: We don't call InitializeProjects() here anymore
+            // Instead we load projects asynchronously after initialization
 
             this.InitializeComponent();
 
@@ -65,20 +72,89 @@ namespace SunStruct
             var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(windowHandle);
             var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
             appWindow.Resize(new Windows.Graphics.SizeInt32(900, 700));
+
+            // Load projects asynchronously
+            LoadProjectsAsync();
         }
 
-        private void InitializeProjects()
+        // Asynchronously load projects from XML files
+        private async void LoadProjectsAsync()
         {
-            // Add projects to the ViewModel instead of directly to the Window
-            ViewModel.Projects.Add(new Project { Name = "Residential Solar", Description = "123 Valley Rd, San Jose, CA 95123", IsStarred = true });
-            ViewModel.Projects.Add(new Project { Name = "Commercial Demo", Description = "456 Market St, San Francisco, CA 94105", IsStarred = false });
-            ViewModel.Projects.Add(new Project { Name = "Solar Farm", Description = "789 Desert Ave, Las Vegas, NV 89123", IsStarred = true });
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Loading projects from XML files...");
+
+                // Clear current projects
+                ViewModel.Projects.Clear();
+
+                // Get projects from the ProjectManager
+                var projects = await ProjectManager.Instance.LoadAllProjectsAsync();
+
+                // If no projects were found, add sample projects
+                if (projects.Count == 0)
+                {
+                    //System.Diagnostics.Debug.WriteLine("No projects found, adding sample projects");
+                    //AddSampleProjects();
+                }
+                else
+                {
+                    // Add loaded projects to ViewModel
+                    foreach (var project in projects)
+                    {
+                        ViewModel.Projects.Add(project);
+                    }
+                    System.Diagnostics.Debug.WriteLine($"Loaded {projects.Count} projects");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading projects: {ex.Message}");
+                // If there's an error, add sample projects
+                AddSampleProjects();
+            }
+        }
+
+        // Add sample projects for first-time users
+        private void AddSampleProjects()
+        {
+            ViewModel.Projects.Add(new Project
+            {
+                Name = "Residential Solar",
+                Description = "123 Valley Rd, San Jose, CA 95123",
+                Location = "San Jose, CA",
+                IsStarred = true,
+                CreatedDate = DateTime.Now.AddDays(-30),
+                LastModifiedDate = DateTime.Now.AddDays(-5)
+            });
+
+            ViewModel.Projects.Add(new Project
+            {
+                Name = "Commercial Demo",
+                Description = "456 Market St, San Francisco, CA 94105",
+                Location = "San Francisco, CA",
+                IsStarred = false,
+                CreatedDate = DateTime.Now.AddDays(-15),
+                LastModifiedDate = DateTime.Now.AddDays(-15)
+            });
+
+            ViewModel.Projects.Add(new Project
+            {
+                Name = "Solar Farm",
+                Description = "789 Desert Ave, Las Vegas, NV 89123",
+                Location = "Las Vegas, NV",
+                IsStarred = true,
+                CreatedDate = DateTime.Now.AddDays(-45),
+                LastModifiedDate = DateTime.Now.AddDays(-2)
+            });
         }
 
         // Public method that can be called from other pages to navigate back to home
         public void NavigateToHome()
         {
             System.Diagnostics.Debug.WriteLine("NavigateToHome called");
+
+            // Reload projects when navigating back to the home page
+            LoadProjectsAsync();
 
             // Clear the frame content
             if (MainFrame != null)
@@ -149,6 +225,7 @@ namespace SunStruct
                 PlaceholderText = "Project Name",
                 MinWidth = 300
             };
+
             dialogContent.Children.Add(textBlock);
             dialogContent.Children.Add(projectNameTextBox);
             projectNameDialog.Content = dialogContent;
@@ -171,11 +248,29 @@ namespace SunStruct
                 var newProject = new Project
                 {
                     Name = projectName,
-                    Description = "San Francisco, CA 94105",
-                    IsStarred = false
+                    Description = "", // Empty description since we'll set location later in the design page
+                    Location = "", // Empty location - will be set via search in the design page
+                    IsStarred = false,
+                    CreatedDate = DateTime.Now,
+                    LastModifiedDate = DateTime.Now
                 };
 
                 System.Diagnostics.Debug.WriteLine($"Creating project with name: {projectName}");
+
+                try
+                {
+                    // Save the project to XML
+                    await ProjectManager.Instance.SaveProjectAsync(newProject);
+                    System.Diagnostics.Debug.WriteLine("Project saved successfully to XML");
+
+                    // Add to the ViewModel
+                    ViewModel.Projects.Add(newProject);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error saving project: {ex.Message}");
+                    // We could show an error dialog here
+                }
 
                 // Check if MainFrame is null
                 if (MainFrame == null)
@@ -195,16 +290,84 @@ namespace SunStruct
 
         private void ProjectsListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            // TODO: Implement project selection functionality
-        }
-    }
+            // Get the clicked project
+            if (e.ClickedItem is Project clickedProject)
+            {
+                System.Diagnostics.Debug.WriteLine($"Project clicked: {clickedProject.Name}");
 
-    // Note: In WinUI 3, best practice is to create a separate file for each class
-    public class Project
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public bool IsStarred { get; set; }
+                // Navigate to the project design page with the selected project
+                if (MainFrame != null)
+                {
+                    MainFrame.Navigate(typeof(ProjectDesignPage), clickedProject);
+
+                    // Hide the home UI
+                    HideHomeUI();
+                }
+            }
+        }
+
+        // Method to handle deleting a project (will need to connect to button in XAML)
+        private async void DeleteProject_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get the project from the button's data context
+                if (sender is Button button && button.DataContext is Project project)
+                {
+                    // Ask for confirmation
+                    ContentDialog deleteDialog = new ContentDialog
+                    {
+                        Title = "Delete Project",
+                        Content = $"Are you sure you want to delete '{project.Name}'? This cannot be undone.",
+                        PrimaryButtonText = "Delete",
+                        CloseButtonText = "Cancel",
+                        DefaultButton = ContentDialogButton.Close,
+                        XamlRoot = this.Content.XamlRoot
+                    };
+
+                    ContentDialogResult result = await deleteDialog.ShowAsync();
+
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        // Delete the project file
+                        await ProjectManager.Instance.DeleteProjectAsync(project);
+
+                        // Remove from the ViewModel
+                        ViewModel.Projects.Remove(project);
+
+                        System.Diagnostics.Debug.WriteLine($"Project deleted: {project.Name}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting project: {ex.Message}");
+                // We could show an error dialog here
+            }
+        }
+
+        // Toggle the starred status
+        private async void ToggleStarred_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get the project from the button's data context
+                if (sender is Button button && button.DataContext is Project project)
+                {
+                    // Toggle the star
+                    project.IsStarred = !project.IsStarred;
+
+                    // Update the project file
+                    await ProjectManager.Instance.UpdateProjectAsync(project);
+
+                    System.Diagnostics.Debug.WriteLine($"Project '{project.Name}' starred status toggled to: {project.IsStarred}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error toggling starred status: {ex.Message}");
+            }
+        }
     }
 
     public class BoolToStarBrushConverter : IValueConverter

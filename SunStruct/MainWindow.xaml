@@ -105,11 +105,13 @@
                                             <ColumnDefinition Width="40"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- Star Icon with improved sizing and alignment -->
+                                        <!-- Star Icon with improved sizing and alignment, now with Click handler -->
                                         <Button Grid.Column="0" Background="Transparent" BorderThickness="0" 
-                            Padding="0" HorizontalAlignment="Center">
+                                                Padding="0" HorizontalAlignment="Center"
+                                                Click="ToggleStarred_Click"
+                                                DataContext="{Binding}">
                                             <FontIcon Glyph="&#xE734;" FontSize="16"
-                                  Foreground="{Binding IsStarred, Converter={StaticResource BoolToStarBrushConverter}}"/>
+                                                     Foreground="{Binding IsStarred, Converter={StaticResource BoolToStarBrushConverter}}"/>
                                         </Button>
 
                                         <!-- Project Info -->
@@ -118,9 +120,11 @@
                                             <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#666666"/>
                                         </StackPanel>
 
-                                        <!-- Delete Button with improved sizing and alignment -->
+                                        <!-- Delete Button with improved sizing and alignment, now with Click handler -->
                                         <Button Grid.Column="2" Background="Transparent" BorderThickness="0"
-                            Padding="0" HorizontalAlignment="Center">
+                                                Padding="0" HorizontalAlignment="Center"
+                                                Click="DeleteProject_Click"
+                                                DataContext="{Binding}">
                                             <FontIcon Glyph="&#xE74D;" FontSize="16" Foreground="#999999"/>
                                         </Button>
                                     </Grid>
