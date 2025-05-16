@@ -58,55 +58,29 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="240"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="240"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Left Panel - Tools -->
+            <!-- Left Panel - Design Tools -->
             <Grid Grid.Column="0" Background="#F0F0F0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Tools Header -->
+                <!-- Design Tools Header -->
                 <TextBlock Grid.Row="0" Text="Design Tools" FontSize="16" 
                            FontWeight="SemiBold" Margin="15,15,0,15"/>
 
-                <!-- Tools List - Now with Click event handlers -->
-                <ListView Grid.Row="1" Margin="10,0,10,10">
-                    <ListViewItem x:Name="SolarPanelsItem" Tapped="SolarPanels_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE946;" Foreground="#666666" Margin="0,0,10,0"/>
-                            <TextBlock Text="Solar Panels" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem x:Name="MeasureItem" Tapped="Measure_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE83F;" Foreground="#666666" Margin="0,0,10,0"/>
-                            <TextBlock Text="Measure" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem x:Name="ComponentsItem" Tapped="Components_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE875;" Foreground="#666666" Margin="0,0,10,0"/>
-                            <TextBlock Text="Components" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem x:Name="LayoutItem" Tapped="Layout_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE8A5;" Foreground="#666666" Margin="0,0,10,0"/>
-                            <TextBlock Text="Layout" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <ListViewItem x:Name="CalculateItem" Tapped="Calculate_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE8FD;" Foreground="#666666" Margin="0,0,10,0"/>
-                            <TextBlock Text="Calculate" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListViewItem>
-                </ListView>
+                <!-- Placeholder for design tools - can be populated as needed -->
+                <StackPanel Grid.Row="1" Margin="15,0,15,15">
+                    <TextBlock Text="Tools will be added here as development progresses..." 
+                               Foreground="#666666" 
+                               FontStyle="Italic"/>
+                </StackPanel>
             </Grid>
 
-            <!-- Right Panel - Map -->
+            <!-- Center Panel - Map -->
             <Grid Grid.Column="1">
                 <!-- Map WebView -->
                 <controls:WebView2 x:Name="MapWebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
@@ -139,6 +113,26 @@
                             CornerRadius="5">
                     <Button Content="+" FontSize="16" Margin="0,0,0,5" Width="40" Height="40"/>
                     <Button Content="-" FontSize="16" Width="40" Height="40"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Right Panel - Properties -->
+            <Grid Grid.Column="2" Background="#F0F0F0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Properties Header -->
+                <TextBlock Grid.Row="0" Text="Properties" FontSize="16" 
+                           FontWeight="SemiBold" Margin="15,15,0,15"/>
+
+                <!-- Placeholder for properties panel - can be populated as needed -->
+                <StackPanel Grid.Row="1" Margin="15,0,15,15">
+                    <TextBlock Text="Property controls will be added here for adjusting angles, rotations, and other settings..." 
+                               Foreground="#666666" 
+                               FontStyle="Italic"
+                               TextWrapping="Wrap"/>
                 </StackPanel>
             </Grid>
         </Grid>

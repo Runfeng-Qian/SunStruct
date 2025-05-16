@@ -410,43 +410,6 @@ namespace SunStruct
             _hasUnsavedChanges = true;
         }
 
-        // Event handlers for the design tools - just stubs for now
-        // In a real implementation, these would actually manipulate the solar design
-
-        private void SolarPanels_Click(object sender, RoutedEventArgs e)
-        {
-            MarkProjectAsChanged();
-            // Implementation for adding/configuring solar panels
-        }
-
-        private void Measure_Click(object sender, RoutedEventArgs e)
-        {
-            // Measurement tool doesn't change the project
-            // Implementation for measuring distances on the map
-        }
-
-        private void Components_Click(object sender, RoutedEventArgs e)
-        {
-            MarkProjectAsChanged();
-            // Implementation for adding/configuring components
-        }
-
-        private void Layout_Click(object sender, RoutedEventArgs e)
-        {
-            MarkProjectAsChanged();
-            // Implementation for changing the layout
-        }
-
-        private async void Calculate_Click(object sender, RoutedEventArgs e)
-        {
-            // This doesn't change the project directly, but we might want to save calculation results
-            MarkProjectAsChanged();
-            // Implementation for calculating energy production, costs, etc.
-
-            // Save calculations automatically
-            await SaveProjectChanges();
-        }
-
         // Handle location button click
         private async void LocationButton_Click(object sender, RoutedEventArgs e)
         {

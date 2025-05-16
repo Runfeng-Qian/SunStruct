@@ -67,10 +67,25 @@ namespace SunStruct
             // Setting title explicitly since WinUI 3 doesn't inherit from window title
             this.Title = "SunStruct";
 
-            // You would handle sizing here - WinUI 3 doesn't auto-apply Height/Width from XAML
+            // Set the window icon
             var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(this);
             var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(windowHandle);
             var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
+
+            // Set the window icon
+            try
+            {
+                // Use the 44x44 icon that was generated for the window
+                string iconPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path,
+                                              "Images", "SunStruct_icon.ico");
+                appWindow.SetIcon(iconPath);
+                System.Diagnostics.Debug.WriteLine($"Icon Path: {iconPath}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting window icon: {ex.Message}");
+            }
+
             appWindow.Resize(new Windows.Graphics.SizeInt32(900, 700));
 
             // Load projects asynchronously
